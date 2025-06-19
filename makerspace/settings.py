@@ -19,6 +19,7 @@ load_dotenv()  # Load environment variables from .env file
 
 
 
+OPENCAGE_API_KEY = os.getenv("OPENCAGE_API_KEY")
 
 
 
