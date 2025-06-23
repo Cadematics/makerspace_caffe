@@ -30,9 +30,40 @@ from django.conf import settings
 
 
 
+# @api_view(['GET'])
+# @permission_classes([IsAuthenticated])
+# def my_profile(request):
+#     user = request.user
+#     data = {
+#         "id": user.id,
+#         "username": user.username,
+#         "email": user.email,
+#         "name": user.first_name + " " + user.last_name,
+#         "bio": "",  # Add `bio` if you're storing it somewhere
+#         "avatar": "",  # Add `avatar` if applicable
+#     }
+#     return Response(data)
 
 
-from .serializers import PetitionSerializer
+
+@api_view(['GET', 'PUT'])
+@permission_classes([IsAuthenticated])
+def my_profile(request):
+    if request.method == 'GET':
+        serializer = UserSerializer(request.user)
+        return Response(serializer.data)
+    elif request.method == 'PUT':
+        serializer = UserSerializer(request.user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=400)
+
+
+
+
+
+
 
 class PetitionViewSet(viewsets.ModelViewSet):
     queryset = Petition.objects.all()
@@ -68,56 +99,44 @@ class PetitionViewSet(viewsets.ModelViewSet):
 
 
 
-
-
-# class PetitionViewSet(viewsets.ModelViewSet):
-#     queryset = Petition.objects.all()
-#     serializer_class = PetitionSerializer
-
-#     def perform_create(self, serializer):
-#         address = self.request.data.get('address')
-#         if address:
-#             key = settings.OPENCAGE_API_KEY
-#             url = f"https://api.opencagedata.com/geocode/v1/json?q={address}&key={key}"
-#             response = requests.get(url)
-#             data = response.json()
-
-#             if data['results']:
-#                 coords = data['results'][0]['geometry']
-#                 serializer.save(lat=coords['lat'], lng=coords['lng'])
-#                 return
-#         # fallback if no geocode
-#         serializer.save(lat=0.0, lng=0.0)
-
-#     def create(self, request, *args, **kwargs):
-#         print("POST DATA:", request.data)
-#         return super().create(request, *args, **kwargs)
-
-
-
-
-
-
-
-
-
-
-# class PetitionViewSet(viewsets.ModelViewSet):
-#     queryset = Petition.objects.all().order_by('-created_at')
-#     serializer_class = PetitionSerializer
-
-
-
-
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def my_created_projects(request):
+def my_projects(request):
     user = request.user
     projects = Project.objects.filter(authauthor=user)
     serializer = ProjectSerializer(projects, many=True)
     return Response(serializer.data)
 
 
+
+
+# @api_view(['GET'])
+# @permission_classes([IsAuthenticated])
+# def my_backings(request):
+#     user = request.user
+#     pledges = Pledge.objects.filter(user=user).select_related("project")
+#     backed_projects = [pledge.project for pledge in pledges]
+#     serializer = ProjectSerializer(backed_projects, many=True)
+#     return Response(serializer.data)
+
+
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def my_backings(request):
+    user = request.user
+    pledges = Pledge.objects.filter(user=user).select_related('project', 'reward')
+    data = [
+        {
+            "backing_id": pledge.id,
+            "project_title": pledge.project.title,
+            "amount": pledge.amount,
+            "reward": pledge.reward.title if pledge.reward else "No reward",
+        }
+        for pledge in pledges
+    ]
+    return Response(data)
 
 
 
@@ -173,12 +192,6 @@ def register(request):
         return Response({"message": "User registered successfully."}, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
-
-
-# class RewardViewSet(viewsets.ModelViewSet):
-#     queryset = Reward.objects.all()
-#     serializer_class = RewardSerializer
 
 
 # projects/views.py

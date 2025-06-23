@@ -88,9 +88,3 @@ class Petition(models.Model):
         return f"{self.name} from {self.city}, {self.state}"
   
   
-  
-  
-  
-  
-    # lat = models.FloatField(null=True)
-    # lng = models.FloatField(null=True)
