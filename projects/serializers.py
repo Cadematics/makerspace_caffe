@@ -3,7 +3,8 @@ from .models import Project
 from .models import Reward
 from .models import Pledge
 from .models import Petition
-
+from .models import User
+from .models import UserProfile
 
 
 
@@ -50,3 +51,21 @@ class PetitionSerializer(serializers.ModelSerializer):
                      'created_at']
         # fields = '__all__'
         read_only_fields = ['lat', 'lng', 'created_at']
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'bio', 'avatar']
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = ['bio', 'avatar']
+    
+    def get_avatar(self, obj):
+        request = self.context.get('request')
+        if obj.avatar and hasattr(obj.avatar, 'url'):
+            return request.build_absolute_uri(obj.avatar.url)
+        return None
+    

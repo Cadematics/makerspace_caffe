@@ -1,66 +1,98 @@
 from django.shortcuts import render
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from django.contrib.auth.models import User
-from rest_framework import serializers, status
+from rest_framework import serializers, status, viewsets, generics
 from rest_framework.response import Response
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, parser_classes
 from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly
 from django.contrib.auth.models import User
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.parsers import MultiPartParser, FormParser
 
-from rest_framework import viewsets
-from .models import Reward
-from .serializers import RewardSerializer
-
-from rest_framework import generics
-from .models import Project
-from .serializers import ProjectSerializer
-
-from .models import Pledge
-from .serializers import PledgeSerializer
-
-
-from .models import Petition
-from .serializers import PetitionSerializer
+ 
+from .models import Reward, Project, Pledge, Petition
+from .serializers import RewardSerializer, ProjectSerializer, PledgeSerializer, PetitionSerializer
 
 import requests
 from django.conf import settings
 
+from .models import UserProfile
+from .serializers import UserProfileSerializer
 
 
-# @api_view(['GET'])
-# @permission_classes([IsAuthenticated])
-# def my_profile(request):
-#     user = request.user
-#     data = {
-#         "id": user.id,
-#         "username": user.username,
-#         "email": user.email,
-#         "name": user.first_name + " " + user.last_name,
-#         "bio": "",  # Add `bio` if you're storing it somewhere
-#         "avatar": "",  # Add `avatar` if applicable
-#     }
-#     return Response(data)
+
+# Create your views here.
+
+@api_view(['GET', 'PUT'])
+@permission_classes([IsAuthenticated])
+@parser_classes([MultiPartParser, FormParser])  # for avatar image upload
+def user_profile_view(request):
+    print('user profile request', request)
+    try:
+        profile = request.user.userprofile
+    except UserProfile.DoesNotExist:
+        return Response({'error': 'Profile not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = UserProfileSerializer(profile)
+        return Response(serializer.data)
+
+    elif request.method == 'PUT':
+        serializer = UserProfileSerializer(profile, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
 
 
 
 @api_view(['GET', 'PUT'])
 @permission_classes([IsAuthenticated])
 def my_profile(request):
+    user = request.user
+    try:
+        profile = user.userprofile
+    except UserProfile.DoesNotExist:
+        profile = UserProfile.objects.create(user=user)
+
     if request.method == 'GET':
-        serializer = UserSerializer(request.user)
-        return Response(serializer.data)
+        user_data = UserSerializer(user).data
+        profile_data = UserProfileSerializer(profile, context={'request': request}).data
+        combined_data = {**user_data, **profile_data}
+        return Response(combined_data)
+
     elif request.method == 'PUT':
-        serializer = UserSerializer(request.user, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=400)
+        user_serializer = UserSerializer(user, data=request.data, partial=True)
+        profile_serializer = UserProfileSerializer(profile, data=request.data, partial=True, context={'request': request})
+
+        if user_serializer.is_valid() and profile_serializer.is_valid():
+            user_serializer.save()
+            profile_serializer.save()
+            combined_data = {**user_serializer.data, **profile_serializer.data}
+            return Response(combined_data)
+
+        errors = {
+            'user_errors': user_serializer.errors,
+            'profile_errors': profile_serializer.errors,
+        }
+        return Response(errors, status=400)
 
 
+# views.py
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def check_username(request):
+    username = request.query_params.get('username')
+    if not username:
+        return Response({'error': 'Username is required'}, status=400)
 
+    exists = User.objects.filter(username=username).exists()
+    return Response({'available': not exists})
 
 
 
@@ -96,9 +128,6 @@ class PetitionViewSet(viewsets.ModelViewSet):
         serializer.save(lat=lat, lng=lng)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-
-
-
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def my_projects(request):
@@ -106,19 +135,6 @@ def my_projects(request):
     projects = Project.objects.filter(authauthor=user)
     serializer = ProjectSerializer(projects, many=True)
     return Response(serializer.data)
-
-
-
-
-# @api_view(['GET'])
-# @permission_classes([IsAuthenticated])
-# def my_backings(request):
-#     user = request.user
-#     pledges = Pledge.objects.filter(user=user).select_related("project")
-#     backed_projects = [pledge.project for pledge in pledges]
-#     serializer = ProjectSerializer(backed_projects, many=True)
-#     return Response(serializer.data)
-
 
 
 
@@ -139,10 +155,6 @@ def my_backings(request):
     return Response(data)
 
 
-
-
-
-# Create your views here.
 
 # API endpoint for listing and creating projects
 class ProjectListCreateView(generics.ListCreateAPIView):

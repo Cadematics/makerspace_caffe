@@ -2,7 +2,7 @@ from django.urls import path, include
 from .views import ProjectListCreateView, ProjectDetailView, MyTokenObtainPairView, MyTokenRefreshView, RewardViewSet,PledgeViewSet
 from rest_framework.routers import DefaultRouter
 from .views import my_projects, my_backings, my_profile
-from .views import PetitionViewSet
+from .views import PetitionViewSet, user_profile_view, check_username
 
 
 
@@ -25,5 +25,9 @@ urlpatterns += [
     path("my-projects/", my_projects, name='my-projects'),
     path("my-backings/", my_backings, name='my-backings'),
     path("me/", my_profile, name='my-profile'),
+    path('edit-profile/', user_profile_view, name='edit-profile'),
+    path('check-username/', check_username, name='check-username'),
+
+
 
 ]
