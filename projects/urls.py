@@ -3,6 +3,11 @@ from .views import ProjectListCreateView, ProjectDetailView, MyTokenObtainPairVi
 from rest_framework.routers import DefaultRouter
 from .views import my_projects, my_backings, my_profile
 from .views import PetitionViewSet, user_profile_view, check_username
+# from .views import EventViewSet
+
+
+
+
 
 
 
@@ -10,7 +15,7 @@ router = DefaultRouter()
 router.register(r'rewards', RewardViewSet, basename='reward')
 router.register(r'pledges', PledgeViewSet)
 router.register(r'petitions', PetitionViewSet, basename='petition')
-
+# router.register(r'events', EventViewSet, basename='events')
 
 
 urlpatterns = [
@@ -27,7 +32,6 @@ urlpatterns += [
     path("me/", my_profile, name='my-profile'),
     path('edit-profile/', user_profile_view, name='edit-profile'),
     path('check-username/', check_username, name='check-username'),
-
-
-
 ]
+
+# urlpatterns += router.urls

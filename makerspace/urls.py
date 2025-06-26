@@ -10,8 +10,10 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/', include('events.urls')),  # 👈 this line
     path('api/', include('projects.urls')),  # Include API routes from the projects app
     path('api/register/', register, name='register'),  # Ensure this exists
+    
 
 
     # path("api/projects/", include("projects.urls")),  # Your project endpoints
@@ -19,6 +21,8 @@ urlpatterns = [
     path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+
 
 
 

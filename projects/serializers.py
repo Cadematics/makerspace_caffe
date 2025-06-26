@@ -9,8 +9,6 @@ from .models import UserProfile
 
 
 
-
-
 class ProjectSerializer(serializers.ModelSerializer):
     image = serializers.ImageField(use_url=True)
     author_name = serializers.CharField(source='authauthor.username', read_only=True)
@@ -25,14 +23,10 @@ class ProjectSerializer(serializers.ModelSerializer):
         return obj.pledge_set.values('user').distinct().count()
 
 
-
-
-
 class RewardSerializer(serializers.ModelSerializer):
     class Meta:
         model = Reward
         fields = '__all__'
-
 
 
 class PledgeSerializer(serializers.ModelSerializer):
@@ -40,7 +34,6 @@ class PledgeSerializer(serializers.ModelSerializer):
         model = Pledge
         fields = '__all__'
         read_only_fields = ['user']
-
 
 
 class PetitionSerializer(serializers.ModelSerializer):

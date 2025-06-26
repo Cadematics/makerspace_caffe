@@ -7,6 +7,10 @@ from datetime import date
 
 
 
+
+
+
+
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     bio = models.TextField(blank=True)
@@ -14,7 +18,6 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return self.user.username
-
 
 
 class Project(models.Model):
@@ -44,13 +47,6 @@ class Project(models.Model):
     def __str__(self):
         return self.title
 
-# class Reward(models.Model):
-#     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='rewards')
-#     title = models.CharField(max_length=200)
-#     description = models.TextField()
-#     minimum_pledge = models.DecimalField(max_digits=10, decimal_places=2)
-
-
 
 class Reward(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='rewards')
@@ -68,7 +64,6 @@ class Reward(models.Model):
         return f"{self.title} - ${self.amount}"
     
 
-
 class Pledge(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
@@ -85,7 +80,6 @@ class PetitionSignature(models.Model):
     # lat = models.FloatField(null=True, blank=True)
     # lng = models.FloatField(null=True, blank=True)
     signed_at = models.DateTimeField(auto_now_add=True)
-
 
 
 class Petition(models.Model):

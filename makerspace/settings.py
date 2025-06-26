@@ -45,6 +45,8 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'events',
+    
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -56,9 +58,10 @@ INSTALLED_APPS = [
     'rest_framework',  # Django REST Framework
 
     # Local apps (to be created)
-    'projects',
     'corsheaders',
     'rest_framework_simplejwt.token_blacklist',
+    
+    'projects',
 ]
 
 

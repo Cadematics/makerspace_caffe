@@ -1,0 +1,15 @@
+from django.contrib import admin
+from .models import Event
+
+# Register your models here.
+
+
+
+@admin.register(Event)
+class EventAdmin(admin.ModelAdmin):
+    list_display = ('title', 'start_datetime', 'end_datetime', 'is_ticketed')
+    ordering = ('start_datetime',)
+
+    @admin.display(boolean=True, description='Ticketed')
+    def is_ticketed(self, obj):
+        return obj.tickets_sold > 0
