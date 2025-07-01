@@ -136,7 +136,9 @@ def my_backings(request):
     data = [
         {
             "backing_id": pledge.id,
+            "project_id": pledge.project.id,
             "project_title": pledge.project.title,
+            "project_image": request.build_absolute_uri(pledge.project.image.url) if pledge.project.image else None,
             "amount": pledge.amount,
             "reward": pledge.reward.title if pledge.reward else "No reward",
         }

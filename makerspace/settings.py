@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     
     'projects',
+    
 ]
 
 
@@ -169,3 +170,14 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+
+# Strip
+STRIPE_SECRET_KEY="sk_test_51I7ddiA3MASHtQVFoVToHynW7l0u6vtEkyzHCncEVgvOprrjuKodOwrVDqFjXomGMGOxxjXuNgLF3jycUY8ufmyD00OaNNJVPf"
+
+STRIPE_WEBHOOK_SECRET = "whsec_43591f3e75a7ebfc1c2e4f30c8e880621fc665b6ec683178c1a9e9473d78c215"
+
+
+# YOUR_DOMAIN = "http://localhost:5173"
+# success_url=f"{YOUR_DOMAIN}/success",
+# cancel_url=f"{YOUR_DOMAIN}/cancel",
