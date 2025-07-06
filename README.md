@@ -36,6 +36,6 @@ This is the Django REST API backend for the Makerspace crowdfunding platform. It
 ### 1️⃣ Clone the repository
 
 ```bash
-git clone https://github.com/yourusername/makerspace-backend.git
-cd makerspace-backend
+git clone https://github.com/cadematicss/makerspace_caffe.git
+cd makerspace_caffe
 
