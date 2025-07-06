@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import EventListView, buy_ticket, my_tickets,EventDetailView
-from .views import purchase_ticket, create_checkout_session, stripe_webhook
+from .views import purchase_ticket, create_checkout_session, stripe_webhook, CrowdfundingEventListView, CrowdfundingEventDetailView
 
 
 urlpatterns = [
@@ -14,6 +14,7 @@ urlpatterns = [
     path('stripe/webhook', stripe_webhook, name='stripe-webhook'),  # no slash
     path('stripe/webhook/', stripe_webhook, name='stripe-webhook-slash'),  # with slash
 
-
+    path('crowdfunding-events/', CrowdfundingEventListView.as_view(), name='crowdfunding-event-list'),
+    path('crowdfunding-events/<int:pk>/', CrowdfundingEventDetailView.as_view(), name='crowdfunding-event-detail'),
 ]
 

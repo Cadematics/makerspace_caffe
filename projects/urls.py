@@ -13,7 +13,7 @@ from .views import PetitionViewSet, user_profile_view, check_username
 
 router = DefaultRouter()
 router.register(r'rewards', RewardViewSet, basename='reward')
-router.register(r'pledges', PledgeViewSet)
+router.register(r'pledges', PledgeViewSet, basename='pledge')
 router.register(r'petitions', PetitionViewSet, basename='petition')
 # router.register(r'events', EventViewSet, basename='events')
 

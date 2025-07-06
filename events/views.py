@@ -3,6 +3,11 @@ from rest_framework import generics
 from .serializers import EventSerializer
 from rest_framework.permissions import AllowAny
 
+from .models import CrowdfundingEvent
+from .serializers import CrowdfundingEventSerializer
+
+
+
 
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -31,6 +36,8 @@ import json
 
 from django.contrib.auth import get_user_model
 
+
+# Create your views here.
 
 User = get_user_model()
 
@@ -86,38 +93,6 @@ def handle_checkout_session(session):
     print(f"✅ SUCCESS: Created TicketPurchase for {user_obj.email} for event '{event_obj.title}' with quantity={quantity}")
 
 
-# def handle_checkout_session(session):
-#     print('the session:', session)
-#     event_id = session['metadata'].get('event_id')
-#     quantity = int(session['metadata'].get('quantity', 1))
-#     customer_email = session.get('customer_details', {}).get('email')
-
-#     print('customer_email', customer_email)
-
-
-#     try:
-#         event_obj = Event.objects.get(id=event_id)
-#     except Event.DoesNotExist:
-#         print("Event not found")
-#         return
-
-#     try:
-#         user_obj = User.objects.get(email=customer_email)
-#     except User.DoesNotExist:
-#         print(f"User with email {customer_email} not found")
-#         return
-
-#     # Save the TicketPurchase
-#     TicketPurchase.objects.create(
-#         user=user_obj,
-#         event=event_obj,
-#         quantity=quantity
-#     )
-
-#     # Increment tickets_sold on event
-#     event_obj.tickets_sold += quantity
-#     event_obj.save()
-
 
 
 @csrf_exempt
@@ -144,9 +119,6 @@ def stripe_webhook(request):
         handle_checkout_session(session)
 
     return HttpResponse(status=200)
-
-
-
 
 
 @api_view(['POST'])
@@ -185,25 +157,6 @@ def create_checkout_session(request):
         return Response({'sessionId': checkout_session.id})
     except Exception as e:
         return Response({'error': str(e)}, status=400)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 class EventDetailView(RetrieveAPIView):
@@ -285,7 +238,6 @@ def purchase_ticket(request):
 
 
 
-# Create your views here.
 
 
 class EventListView(generics.ListAPIView):
@@ -293,3 +245,17 @@ class EventListView(generics.ListAPIView):
     serializer_class = EventSerializer
     permission_classes = [AllowAny]
 
+
+
+
+
+class CrowdfundingEventListView(generics.ListAPIView):
+    queryset = CrowdfundingEvent.objects.all()
+    serializer_class = CrowdfundingEventSerializer
+    permission_classes = [AllowAny]
+
+
+class CrowdfundingEventDetailView(generics.RetrieveAPIView):
+    queryset = CrowdfundingEvent.objects.all()
+    serializer_class = CrowdfundingEventSerializer
+    permission_classes = [AllowAny]

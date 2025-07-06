@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Event, TicketPurchase
+from .models import Event, TicketPurchase, CrowdfundingEvent
 
 # Register your models here.
 
@@ -19,3 +19,9 @@ class EventAdmin(admin.ModelAdmin):
     @admin.display(boolean=True, description='Ticketed')
     def is_ticketed(self, obj):
         return obj.tickets_sold > 0
+
+
+@admin.register(CrowdfundingEvent)
+class CrowdfundingEventAdmin(admin.ModelAdmin):
+    list_display = ('title', 'start_date', 'end_date')
+

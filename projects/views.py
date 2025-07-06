@@ -219,9 +219,12 @@ class PledgeViewSet(viewsets.ModelViewSet):
         pledge = serializer.save(user=self.request.user)
 
         # Add the pledged amount to the project's current funding
-        project = pledge.project
-        project.current_funding += pledge.amount
-        project.save()
+        if pledge.project:
+            pledge.project.current_funding += pledge.amount
+            pledge.project.save()
+        elif pledge.event:
+            pledge.event.current_funding += pledge.amount
+            pledge.event.save()
 
 
 
